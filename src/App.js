@@ -1,24 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import UserInfo from './components/UserInfo';
 
 function App() {
+  const [githubId, setGithubId] = useState('');
+  const [userInfo, setUserInfo] = useState(null);
+
+  const buttonClickHandler = async (githubId) => {
+    if (githubId.length === 0) {
+      return alert('文字を入力して下さい');
+    }
+    try {
+      const userInfo = await fetchUserInfo(githubId);
+      setUserInfo(userInfo);
+      setGithubId('');
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchUserInfo = async (userId) => {
+    const response = await fetch(
+      `https://api.github.com/users/${encodeURIComponent(userId)}`
+    );
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <h2>GitHub User Info</h2>
+      <input
+        type='text'
+        placeholder='GitHub ID'
+        value={githubId}
+        onChange={(event) => setGithubId(event.target.value)}
+      />
+      <button onClick={() => buttonClickHandler(githubId)}>
+        Get user info
+      </button>
+      {userInfo && <UserInfo {...userInfo}></UserInfo>}
+    </>
   );
 }
 
