@@ -5,7 +5,7 @@ function App() {
   const [githubId, setGithubId] = useState('');
   const [userInfo, setUserInfo] = useState(null);
 
-  const buttonClickHandler = async (githubId) => {
+  const handleGithubId = async (githubId) => {
     if (githubId.length === 0) {
       return alert('文字を入力して下さい');
     }
@@ -36,8 +36,11 @@ function App() {
         placeholder='GitHub ID'
         value={githubId}
         onChange={(event) => setGithubId(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') return handleGithubId(githubId);
+        }}
       />
-      <button onClick={() => buttonClickHandler(githubId)}>
+      <button onClick={() => handleGithubId(githubId)}>
         Get user info
       </button>
       {userInfo && <UserInfo {...userInfo}></UserInfo>}
